@@ -1,0 +1,30 @@
+:host {
+	display: block;
+
+	&.secondary {
+		button {
+			background-color: var(--secondary-text-color);
+			color: var(--text-icons-color);
+			&:hover {
+				background-color: var(--accent-color);
+ 			}
+		}
+	}
+}
+
+button {
+	display: inline-block;
+	padding: 10px 20px;
+ 	background-color: var(--primary-color);
+	color: var(--text-icons-color);
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+
+	&:hover {
+		background-color: var(--accent-color);
+		color: var(--text-color);
+	}
+}
+

@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files */
+@import "styles/fonts";
+@import "styles/typography";
+@import "styles/variables";
+
+body {
+	padding: 0;
+	margin: 0;
+	font-family: "Kanit", serif;
+	color: var(--divider-color);
+	background-color: var(--primary-text-color);
+	* {
+		box-sizing: border-box;
+	}
+}
+
+.container {
+	width: 100%;
+	max-width: 1440px;
+	margin: 0 auto;
+	padding: 0 55px;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+	margin: 0;
+	padding: 0;
+ }
