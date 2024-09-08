@@ -1,0 +1,13 @@
+.container {
+	 padding-top: 100px;
+	video {
+		height: calc(70vh);
+		width: 100%;
+	}
+}
+
+.modes{
+	display: flex;
+
+	gap: 20px;
+}

@@ -1,0 +1,6 @@
+<div class="page-container">
+	@if (!isHomePage) {
+		<div class="back-button" (click)="goToHome()"><</div>
+	}
+	<router-outlet></router-outlet>
+</div>

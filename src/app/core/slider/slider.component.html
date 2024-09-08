@@ -1,0 +1,10 @@
+<section class="slider" *ngIf="loaded" [@fadeInOut]>
+	<div class="container">
+		<h1>Slider</h1>
+		<swiper-container #swiper slides-per-view="3">
+			<swiper-slide *ngFor="let slide of slides">
+				<div class="slide" [style.background]="slide.bgColor">{{ slide.text }}</div>
+			</swiper-slide>
+		</swiper-container>
+	</div>
+</section>

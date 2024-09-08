@@ -1,0 +1,17 @@
+:root {
+	--primary-color-rgb-value: 81, 45, 168;
+	--light-primary-color-rgb-value: 209, 196, 233;
+	--accent-color-rgb-value: 224, 64, 251;
+	--text-icons-color-rgb-value: 255, 255, 255;
+	--primary-text-color-rgb-value: 33, 33, 33;
+	--secondary-text-color-rgb-value: 117, 117, 117;
+	--divider-color-rgb-value: 189, 189, 189;
+
+	--primary-color: rgb(var(--primary-color-rgb-value));
+	--light-primary-color: rgb(var(--light-primary-color-rgb-value));
+	--accent-color: rgb(var(--accent-color-rgb-value));
+	--text-icons-color: rgb(var(--text-icons-color-rgb-value));
+	--primary-text-color: rgb(var(--primary-text-color-rgb-value));
+	--secondary-text-color: rgb(var(--secondary-text-color-rgb-value));
+	--divider-color: rgb(var(--divider-color-rgb-value));
+}

@@ -1,0 +1,19 @@
+<div class="page container">
+	<div class="row modes">
+		@for (mode of modes; track $index) {
+			<app-button class="mode" (clicked)="setMode(mode.mode)" [text]="mode.text" />
+		}
+	</div>
+	@switch (mode) {
+		@case ('faceRecognition') {
+			<app-camera [type]="'face'" />
+		}
+		@case ('emotions') {
+			<app-camera [type]="'emotions'" />
+		}
+		@default {
+			<span>Please select tensor working mode</span>
+		}
+	}
+</div>
+

@@ -1,0 +1,25 @@
+:host {
+	display: block;
+}
+
+.banner {
+	height: 100vh;
+	text-align: center;
+}
+
+.container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+h1 {
+	margin-bottom: 40px;
+}
+
+.buttons {
+	display: flex;
+	justify-content: space-between;
+	padding: 50px;
+}
