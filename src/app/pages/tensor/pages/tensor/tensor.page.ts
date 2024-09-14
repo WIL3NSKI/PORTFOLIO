@@ -3,7 +3,7 @@ import { ButtonComponent } from '../../../../core/button/button.component'
 import { CameraComponent } from '../../../../core/camera/camera.component'
 
 
-type TensorModes = 'faceRecognition' | 'emotions'
+type TensorModes = 'faceRecognition' | 'emotions' | 'ageAndGender'
 
 @Component({
 	selector: 'app-tensor',
@@ -21,6 +21,7 @@ export class TensorPage {
 	modes: { text: string, mode: TensorModes }[] = [
 		{ text: 'Face', mode: 'faceRecognition' },
 		{ text: 'Emotions in motion :)', mode: 'emotions' },
+		{ text: 'gender and age', mode: 'ageAndGender' },
 	]
 
 	ngAfterViewInit() {
