@@ -1,12 +1,14 @@
 @import "styles/fonts";
 @import "styles/typography";
 @import "styles/variables";
+@import "styles/reusable";
 
 body {
 	padding: 0;
 	margin: 0;
 	font-family: "Kanit", serif;
 	color: var(--divider-color);
+	--menu-height: 50px;
 
 	* {
 		box-sizing: border-box;
@@ -14,7 +16,7 @@ body {
 }
 
 .page-container {
-	height: 100vh;
+	height: calc(100vh - var(--menu-height));
 	width: 100vw;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -71,9 +73,17 @@ section {
 		background-color: rgba(0, 0, 0, 0.6);
 		backdrop-filter: blur(0);
 	}
+	25% {
+		background-color: rgba(5, 5, 5, 0.4);
+		backdrop-filter: blur(2px);
+	}
 	50% {
 		background-color: rgba(5, 5, 5, 0.2);
 		backdrop-filter: blur(4px);
+	}
+	75% {
+		background-color: rgba(5, 5, 5, 0.4);
+		backdrop-filter: blur(2px);
 	}
 	100% {
 		background-color: rgba(0, 0, 0, 0.6);
@@ -81,13 +91,25 @@ section {
 	}
 }
 
-@keyframes text-effects {
+ @keyframes text-effects {
 	0%, 100% {
 		color: white;
 		text-shadow: none;
+		opacity: 1;
+	}
+	25% {
+		color: lightgray;
+		text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+		opacity: 0.7;
 	}
 	50% {
 		color: black;
-		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+		text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+		opacity: 0.5;
+	}
+	75% {
+		color: lightgray;
+		text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+		opacity: 0.7;
 	}
 }

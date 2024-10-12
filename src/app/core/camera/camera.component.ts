@@ -69,7 +69,7 @@ export class CameraComponent implements OnInit {
 	}
 
 	private async loadFaceApiModels() {
-		const MODEL_URL = '/assets/models'  // Ścieżka do modeli
+		const MODEL_URL = '/assets/models'
 		await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
 		await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
 		await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)

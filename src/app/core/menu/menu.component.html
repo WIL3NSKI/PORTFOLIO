@@ -1,1 +1,9 @@
-<p>menu works!</p>
+<div class="container">
+	<div class="row">
+		@for (item of routing; track $index) {
+			<div class="item clickable" [routerLink]="item.url">
+				{{ item.name }}
+			</div>
+		}
+	</div>
+</div>

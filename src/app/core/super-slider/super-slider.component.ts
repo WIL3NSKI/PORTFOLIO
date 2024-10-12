@@ -41,11 +41,21 @@ export class SuperSliderComponent {
 
 	private initThree(): void {
 		this.scene = new THREE.Scene()
+		this.scene.background = new THREE.Color(0x111111)
+
 		this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 		this.camera.position.set(0, 0, 10)
+
 		this.renderer = new THREE.WebGLRenderer({ alpha: true })
 		this.renderer.setSize(window.innerWidth, window.innerHeight)
 		this.rendererContainer.nativeElement.appendChild(this.renderer.domElement)
+
+		const floorGeometry = new THREE.PlaneGeometry(50, 50)
+		const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x222222, side: THREE.DoubleSide })
+		const floor = new THREE.Mesh(floorGeometry, floorMaterial)
+		floor.rotation.x = Math.PI / 2  // Obrót, żeby był poziomy
+		floor.position.y = -5
+		this.scene.add(floor)
 
 		this.addSwipeListeners()
 	}
@@ -64,16 +74,33 @@ export class SuperSliderComponent {
 			loader.load(item.path, (texture) => {
 				const aspectRatio = texture.image.width / texture.image.height
 				const geometry = new THREE.PlaneGeometry(this.imageWidth * aspectRatio, this.imageHeight)
-				const material = new THREE.MeshBasicMaterial({ map: texture })
 
+				// Zamiast MeshBasicMaterial używamy MeshStandardMaterial, który reaguje na światło
+				const material = new THREE.MeshStandardMaterial({ map: texture })
 				const mesh = new THREE.Mesh(geometry, material)
-				const reflectionMesh = new THREE.Mesh(geometry, material)
+
+				const reflectionMaterial = new THREE.MeshStandardMaterial({
+					map: texture,
+					opacity: 0.4,
+					transparent: true,
+					side: THREE.DoubleSide,
+				})
+				const reflectionMesh = new THREE.Mesh(geometry, reflectionMaterial)
 
 				mesh.position.x = index * (this.imageWidth + this.spacing) - this.currentIndex * (this.imageWidth + this.spacing)
+				mesh.position.y = 2
 				reflectionMesh.position.x = mesh.position.x
-				reflectionMesh.position.y = -mesh.position.y - 5
-				reflectionMesh.rotation.x = Math.PI
+				reflectionMesh.position.y = -this.imageHeight - 1
 
+				reflectionMesh.scale.set(1, 0.5, 1)
+
+				reflectionMesh.rotation.x = Math.PI
+				const pointLight = new THREE.PointLight(0xffffff, 1, 100)
+				pointLight.position.set(0, 5, 10)
+				this.scene.add(pointLight)
+
+				const ambientLight = new THREE.AmbientLight(0x404040)
+				this.scene.add(ambientLight)
 				this.scene.add(mesh)
 				this.scene.add(reflectionMesh)
 			})

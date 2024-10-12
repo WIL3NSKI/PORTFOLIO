@@ -18,14 +18,32 @@ export class BackgroundComponent {
 	private camera!: THREE.PerspectiveCamera
 	private renderer!: THREE.WebGLRenderer
 	private mesh!: THREE.Mesh
-	private defaultEffect: Function = this.activateWaterEffect
+	private defaultEffect: Function = this.activateOtherEffect
+	private rippleRenderTarget1!: THREE.WebGLRenderTarget
+	private rippleRenderTarget2!: THREE.WebGLRenderTarget
+	private currentRenderTarget!: THREE.WebGLRenderTarget
 
 	ngAfterViewInit(): void {
 		this.initThree()
 		this.addMesh()
 		this.animate()
+		this.initRenderTargets()
 		this.activateWaterEffect()
-		this.defaultEffect()
+	}
+
+	private initRenderTargets(): void {
+		const width = window.innerWidth
+		const height = window.innerHeight
+
+		const renderTargetParams = {
+			minFilter: THREE.LinearFilter,
+			magFilter: THREE.LinearFilter,
+			format: THREE.RGBAFormat,
+		}
+
+		this.rippleRenderTarget1 = new THREE.WebGLRenderTarget(width, height, renderTargetParams)
+		this.rippleRenderTarget2 = this.rippleRenderTarget1.clone()
+		this.currentRenderTarget = this.rippleRenderTarget1
 	}
 
 	ngOnDestroy(): void {
@@ -44,6 +62,7 @@ export class BackgroundComponent {
 	private addMesh(): void {
 		const textureLoader = new THREE.TextureLoader()
 		const imagePath = this.imagePath
+
 		textureLoader.load(imagePath, (texture) => {
 			const aspectRatio = texture.image.width / texture.image.height
 			const geometry = new THREE.PlaneGeometry(5 * aspectRatio, 5)
@@ -55,6 +74,8 @@ export class BackgroundComponent {
 					waterEffectIntensity: { value: 0.0 },
 					otherEffectIntensity: { value: 0.0 },
 					mouse: { value: new THREE.Vector2(0.5, 0.5) },
+					mouseActive: { value: 0.0 },
+					rippleTexture: { value: this.rippleRenderTarget1.texture },
 				},
 				vertexShader: vertexShaderSource,
 				fragmentShader: fragmentShaderSource,
@@ -62,12 +83,31 @@ export class BackgroundComponent {
 
 			this.mesh = new THREE.Mesh(geometry, material)
 			this.scene.add(this.mesh)
+			this.defaultEffect()
 		})
 	}
 
 	private animate(): void {
 		requestAnimationFrame(() => this.animate())
-		this.render()
+
+		if (!this.mesh || !this.mesh.material) return
+
+		const material = <THREE.ShaderMaterial> this.mesh.material
+
+		// Przełączamy render targety
+		this.renderer.setRenderTarget(this.currentRenderTarget)
+		this.renderer.render(this.scene, this.camera)
+
+		// Zamieniamy render target na drugi
+		this.currentRenderTarget = (this.currentRenderTarget === this.rippleRenderTarget1)
+			? this.rippleRenderTarget2 : this.rippleRenderTarget1
+
+		// Ustawiamy rippleTexture na nowy render target
+		material.uniforms['rippleTexture'].value = this.currentRenderTarget.texture
+
+		// Renderujemy do ekranu (domyślny render target)
+		this.renderer.setRenderTarget(null)
+		this.renderer.render(this.scene, this.camera)
 	}
 
 	private render(): void {
@@ -107,17 +147,37 @@ export class BackgroundComponent {
 
 	@HostListener('window:mousemove', [ '$event' ])
 	onMouseMove(event: MouseEvent): void {
-		if (this.mesh) {
-			const rect = this.renderer.domElement.getBoundingClientRect()
-			const x = (event.clientX - rect.left) / rect.width
-			const y = 1 - (event.clientY - rect.top) / rect.height // Odwrócenie osi Y
+		const rect = this.renderer.domElement.getBoundingClientRect()
+		const mouse = new THREE.Vector2()
+		mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+		mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+		const raycaster = new THREE.Raycaster()
+		raycaster.setFromCamera(mouse, this.camera)
+
+		const intersects = raycaster.intersectObject(this.mesh)
+		if (intersects.length > 0) {
+			const uv = intersects[0].uv
+			if (!uv) {
+				return
+			}
 			const material = <THREE.ShaderMaterial> this.mesh.material
- 			material.uniforms['mouse'].value.set(x, y)
- 		}
+			if (material.uniforms['mouse'] && material.uniforms['mouseActive']) {
+				material.uniforms['mouse'].value.set(uv.x, uv.y)
+				material.uniforms['mouseActive'].value = 1.0
+			}
+		}
+	}
+
+	@HostListener('window:mouseleave')
+	onMouseLeave(): void {
+		const material = <THREE.ShaderMaterial> this.mesh.material
+		if (material.uniforms['mouseActive']) {
+			material.uniforms['mouseActive'].value = 0.0
+		}
 	}
 }
 
-// Vertex Shader
 const vertexShaderSource = `
 varying vec2 vUv;
 
@@ -127,32 +187,29 @@ void main() {
 }
 `
 
-// Fragment Shader
+// ten shader jest zepstuy do efektu wody rozkminic jak zrobic wplywanie fali na fale
 const fragmentShaderSource = `
 uniform float time;
 uniform sampler2D waterTexture;
-uniform vec2 mouse;  
-uniform float dynamicEffectIntensity;
-uniform float waterEffectIntensity;
-uniform float otherEffectIntensity;
+uniform vec2 mouse;
+uniform float mouseActive;
 varying vec2 vUv;
 
 void main() {
     vec2 uv = vUv;
 
-    if (dynamicEffectIntensity > 0.0) {
-        uv.x += sin(uv.y * 10.0 + time) * 0.1;
-    } else if (waterEffectIntensity > 0.0) {
-        uv.y += cos(uv.x * 10.0 + time) * 0.1;
-    } else if (otherEffectIntensity > 0.0) {
-           vec2 dist = uv - mouse;
-        float effect = exp(-length(dist) * 25.0);
+    // Obliczamy dystans od kursora
+    float dist = distance(mouse, uv);
 
-        // Silniejszy efekt fali
-        uv.x += effect * sin(uv.y * 20.0 + time * 5.0) * 0.05;
-        uv.y += effect * cos(uv.x * 20.0 + time * 5.0) * 0.05;
-    }
+    // Dynamiczne generowanie fal o mniejszym zasięgu
+    float ripple = mouseActive * sin(30.0 * dist - time * 2.0) * 0.02;
 
-    gl_FragColor = texture2D(waterTexture, uv);
+    // Zniekształcamy tylko lokalnie, w mniejszym obszarze
+    ripple *= exp(-dist * 20.0);  // Fale szybciej maleją, lokalnie
+
+    // Pobieramy teksturę wody i dodajemy efekt fali
+    vec4 color = texture2D(waterTexture, uv + ripple);
+
+    gl_FragColor = color;
 }
 `

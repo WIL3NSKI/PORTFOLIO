@@ -1,0 +1,11 @@
+:host {
+	position: relative;
+	z-index: 1000;
+}
+
+.row {
+	height: var(--menu-height);
+	align-items: center;
+	gap: 30px;
+	color: var(--black-color);
+}

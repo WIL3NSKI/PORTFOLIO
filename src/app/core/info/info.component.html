@@ -1,0 +1,11 @@
+<div class="container">
+	<h2>{{ title }}</h2>
+	<div class="content">
+		@for (card of data; track $index) {
+			<div class="card">
+				<h3>{{ card.title }}</h3>
+				<p>{{ card.text }}</p>
+			</div>
+		}
+	</div>
+</div>

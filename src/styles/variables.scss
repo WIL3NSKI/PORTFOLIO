@@ -6,7 +6,11 @@
 	--primary-text-color-rgb-value: 33, 33, 33;
 	--secondary-text-color-rgb-value: 117, 117, 117;
 	--divider-color-rgb-value: 189, 189, 189;
-
+	--black-color-rgb-value: 0, 0, 0;
+	--white-color-rgb-value: 255, 255, 255;
+	
+	--black-color: rgb(var(--black-color-rgb-value));
+	--white-color: rgb(var(--white-color-rgb-value));
 	--primary-color: rgb(var(--primary-color-rgb-value));
 	--light-primary-color: rgb(var(--light-primary-color-rgb-value));
 	--accent-color: rgb(var(--accent-color-rgb-value));

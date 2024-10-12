@@ -1,6 +1,5 @@
+<app-menu />
 <div class="page-container">
-	@if (!isHomePage) {
-		<div class="back-button" (click)="goToHome()"><</div>
-	}
+	<app-background #background />
 	<router-outlet></router-outlet>
 </div>
